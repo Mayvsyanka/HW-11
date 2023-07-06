@@ -63,3 +63,7 @@ class ContactResponse(ContactModel):
 
     class Config:
         orm_mode = True
+
+
+class RequestEmail(BaseModel):
+    email: EmailStr
