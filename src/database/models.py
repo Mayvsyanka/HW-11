@@ -1,3 +1,5 @@
+"""Models for Postgress"""
+
 from sqlalchemy import Column, Integer, String, func, Date, Boolean
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.ext.declarative import declarative_base

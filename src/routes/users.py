@@ -1,3 +1,5 @@
+"""Module for User's operations"""
+
 from fastapi import APIRouter, Depends, status, UploadFile, File
 from sqlalchemy.orm import Session
 import cloudinary
@@ -15,12 +17,39 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 @router.get("/me/", response_model=UserDb)
 async def read_users_me(current_user: User = Depends(auth_service.get_current_user)):
+    """
+    The read_users_me function returns the current user's information.
+        ---
+        get:
+          tags: [users]
+          description: Returns the current user's information. 
+          responses:
+            200:  # HTTP status code 200 means &quot;OK&quot;
+              description: The requested resource was returned successfully.
+    
+    :param current_user: User: Get the current user
+    :return: The current user
+    :doc-author: Trelent
+    """
     return current_user
 
 
 @router.patch('/avatar', response_model=UserDb)
 async def update_avatar_user(file: UploadFile = File(), current_user: User = Depends(auth_service.get_current_user),
                              db: Session = Depends(get_db)):
+    """
+    The update_avatar_user function updates the avatar of a user.
+        Args:
+            file (UploadFile): The image to be uploaded.
+            current_user (User): The user whose avatar is being updated.
+            db (Session): A database session object for interacting with the database.
+    
+    :param file: UploadFile: Get the file from the request body
+    :param current_user: User: Get the current user from the database
+    :param db: Session: Pass the database session to the repository layer
+    :return: A user object
+    :doc-author: Trelent
+    """
     cloudinary.config(
         cloud_name=settings.cloudinary_name,
         api_key=settings.cloudinary_api_key,

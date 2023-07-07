@@ -1,3 +1,5 @@
+"""Module for authorization and authentication operations"""
+
 from typing import List
 
 from fastapi import APIRouter, HTTPException, Depends, status, Security, BackgroundTasks, Request
@@ -17,6 +19,19 @@ security = HTTPBearer()
 @router.post('/request_email')
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
                         db: Session = Depends(get_db)):
+    """
+    The request_email function is used to send an email to the user with a link that will allow them
+    to confirm their email address. The function takes in a RequestEmail object, which contains the
+    email of the user who wants to confirm their account. It then checks if there is already a user
+    with that email in our database, and if so it sends an email containing a confirmation link.
+    
+    :param body: RequestEmail: Get the email from the request body
+    :param background_tasks: BackgroundTasks: Add a task to the background tasks queue
+    :param request: Request: Get the base url of the application
+    :param db: Session: Get the database session from the dependency injection
+    :return: A dictionary with a message key
+    :doc-author: Trelent
+    """
     user = await repository_users.get_user_by_email(body.email, db)
 
     if user.confirmed:
@@ -29,6 +44,18 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
 
 @router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)):
+    """
+    The signup function creates a new user in the database.
+        It also sends an email to the user with their username and password.
+        The function returns a JSON object containing the newly created user's information.
+    
+    :param body: UserModel: Get the user data from the request body
+    :param background_tasks: BackgroundTasks: Add a task to the background tasks queue
+    :param request: Request: Get the base_url of the application
+    :param db: Session: Get the database session
+    :return: A dictionary with the user and a string
+    :doc-author: Trelent
+    """
     exist_user = await repository_users.get_user_by_email(body.email, db)
     if exist_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
@@ -42,6 +69,14 @@ async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Re
 
 @router.post("/login", response_model=TokenModel)
 async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    """
+    The login function is used to authenticate a user.
+    
+    :param body: OAuth2PasswordRequestForm: Get the username and password from the request body
+    :param db: Session: Get a database session
+    :return: A dict
+    :doc-author: Trelent
+    """
     user = await repository_users.get_user_by_email(body.username, db)
     if user is None:
         raise HTTPException(
@@ -61,6 +96,14 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depen
 
 @router.get('/refresh_token', response_model=TokenModel)
 async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
+    """
+    The refresh_token function is used to refresh the access token.
+    
+    :param credentials: HTTPAuthorizationCredentials: Get the token from the request header
+    :param db: Session: Pass the database connection to the function
+    :return: A dictionary with access_token, refresh_token and token_type
+    :doc-author: Trelent
+    """
     token = credentials.credentials
     email = await auth_service.decode_refresh_token(token)
     user = await repository_users.get_user_by_email(email, db)
@@ -77,6 +120,19 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(sec
 
 @router.get('/confirmed_email/{token}')
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
+    """
+    The confirmed_email function is used to confirm a user's email address.
+        It takes the token from the URL and uses it to get the user's email address.
+        Then, it checks if that user exists in our database, and if they do not exist, 
+        we raise an HTTPException with a status code of 400 (Bad Request) and detail message &quot;Verification error&quot;.
+         If they do exist in our database but their confirmed field is already True (meaning their email has already been confirmed), 
+         then we return a JSON response with message &quot;Your email is already confirmed&quot;. Otherwise, we call
+    
+    :param token: str: Get the token from the url
+    :param db: Session: Get the database session
+    :return: A message
+    :doc-author: Trelent
+    """
     email = await auth_service.get_email_from_token(token)
     user = await repository_users.get_user_by_email(email, db)
     if user is None:

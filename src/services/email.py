@@ -1,3 +1,5 @@
+"""The service of sending an e-mail to the user"""
+
 from pathlib import Path
 
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
@@ -23,6 +25,19 @@ conf = ConnectionConfig(
 
 
 async def send_email(email: EmailStr, username: str, host: str):
+    """
+    The send_email function sends an email to the user with a link to confirm their email address.
+        The function takes in three parameters:
+            -email: the user's email address, which is used as a unique identifier for them.
+            -username: the username of the user who registered. This is included in case they forget their username and need it for logging in later on. 
+            -host: this parameter contains information about where our application is hosted (i.e., localhost or Heroku). It will be used when creating links that users can click on.
+    
+    :param email: EmailStr: Specify the email address of the recipient
+    :param username: str: Pass the username to the email template
+    :param host: str: Pass the host name of the server to be used in the email template
+    :return: The token_verification
+    :doc-author: Trelent
+    """
     try:
         token_verification = auth_service.create_email_token({"sub": email})
         message = MessageSchema(
