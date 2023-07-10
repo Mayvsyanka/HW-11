@@ -17,41 +17,49 @@ async def get_contacts(user: User, skip: int, limit: int, db: Session) -> List[C
     The get_contacts function returns a list of contacts for the specified user.
         
     
-    :param user: User: Get the user_id of the logged in user
-    :param skip: int: Skip a certain number of contacts in the database
-    :param limit: int: Limit the number of contacts returned
-    :param db: Session: Pass the database session to the function
-    :return: A list of contacts
+    :param user: Get the user_id from the user object
+    :type user: User
+    :param skip: Skip the first n contacts
+    :type skip: int
+    :param limit: Limit the number of contacts that are returned
+    :type limit: int
+    :param db: Pass the database session to the function
+    :type db: Session
+    :return: A list of contacts for a user
+    :rtype: list[Contact]
     """
     return db.query(Contact).filter(Contact.user_id == user.id).offset(skip).limit(limit).all()
 
 
 async def get_contact(user: User, contact_id: int, db: Session) -> Contact: 
     """
-    The get_contact function returns a contact from the database.
-        Args:
-            user (User): The user who owns the contact.
-            contact_id (int): The id of the desired Contact object. 
-            db (Session): A database session to use for querying data from the database.
+    The get_contact function returns a current contact for the specified user.
     
-    :param user: User: Get the user from the database
-    :param contact_id: int: Filter the database query
-    :param db: Session: Pass the database session to the function
-    :return: A contact object
+    :param user: Get the user from the database
+    :type user: User
+    :param contact_id: Filter the contact by id
+    :type contact_id: int
+    :param db: Get the database session
+    :type db: Session
+    :return: The first contact found in the database that matches the user_id and contact_id
+    :rtype: Contact | None
     """
     return db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == user.id)).first()
 
 
 async def create_contact(body: ContactModel, user: User, db: Session) -> Contact:
     """
-    The create_contact function creates a new contact in the database.
+    The create_contact function creates a new contact for the specified user in the database.
         
     
-    :param body: ContactModel: Pass the json body of the request to the function
-    :param user: User: Get the user id from the token
-    :param db: Session: Access the database
-    :return: The contact object that was created
-    :doc-author: Trelent
+    :param body: Get the data from the request body
+    :type body: ContactModel
+    :param user: Get the user id from the token
+    :type user: User
+    :param db: Get the database session
+    :type db: Session
+    :return: New contact
+    :rtype: Contact
     """
     contact = Contact(firstname=body.firstname,
                       lastname=body.lastname, phone_number=body.phone_number, email=body.email, date_of_birth=body.date_of_birth, relationships=body.relationships, user=user)
@@ -63,19 +71,17 @@ async def create_contact(body: ContactModel, user: User, db: Session) -> Contact
 
 async def remove_contact(user:User, contact_id: int, db: Session) -> Contact | None:
     """
-    The remove_contact function removes a contact from the database.
-        Args:
-            user (User): The user who owns the contact to be removed.
-            contact_id (int): The id of the contact to be removed.
-            db (Session): A connection to our database, used for querying and deleting contacts.
-        Returns: 
-            Contact | None: If successful, returns a Contact object representing the deleted record; otherwise returns None.
+    The remove_contact function removes a current contact from the database.
+
     
-    :param user:User: Specify the user that is logged in
-    :param contact_id: int: Specify which contact to delete
-    :param db: Session: Pass the database session to the function
-    :return: The contact object that was deleted
-    :doc-author: Trelent
+    :param user: Identify the user who is making the request
+    :type user: User
+    :param contact_id: Identify the contact to be removed
+    :type contact_id: int
+    :param db: Pass the database session to the function
+    :type db: Session
+    :return: The contact object if it was deleted, otherwise none
+    :rtype: Contact | None
     """
     contact = db.query(Contact).filter(
         and_(Contact.id == contact_id, Contact.user_id == user.id)).first()
@@ -88,22 +94,19 @@ async def remove_contact(user:User, contact_id: int, db: Session) -> Contact | N
 async def update_contact(user:User, contact_id: int, body: ContactUpdate, db: Session) -> Contact | None:
     """
     The update_contact function updates a contact in the database.
-        Args:
-            user (User): The user who is making the request.
-            contact_id (int): The id of the contact to be updated.
-            body (ContactUpdate): A ContactUpdate object containing all fields that can be updated for a given Contact object, including firstname, lastname, phone_number, email and date_of_birth. 
-                Note: relationships cannot be changed via this function; use add/remove relationship functions instead! 
-        Returns: 
-            None if no such contact exists or
+
     
-    :param user:User: Get the user id from the database
-    :param contact_id: int: Identify the contact that is being updated
-    :param body: ContactUpdate: Pass in the data that will be used to update the contact
-    :param db: Session: Create a database session
-    :return: A contact or none
-    :doc-author: Trelent
+    :param user: Get the user id from the token
+    :type user: User
+    :param contact_id: Identify the contact that is being updated
+    :type contact_id: int
+    :param body: Get the data from the request body
+    :type body: ContactUpdate
+    :param db: Access the database
+    :type db: Session
+    :return: An updated contact object
+    :rtype: Contact | None
     """
-    
     contact = db.query(Contact).filter(
         and_(Contact.id == contact_id, Contact.user_id == user.id)).first()
     if contact:
@@ -120,16 +123,15 @@ async def update_contact(user:User, contact_id: int, body: ContactUpdate, db: Se
 async def get_birthdays(user:User, db: Session) -> List[Contact]:
     """
     The get_birthdays function returns a list of contacts whose birthdays are within the next 7 days.
-        Args:
-            user (User): The user object for which we want to get the nearest birthdays.
-            db (Session): A database session object that is used to query the database.
     
-    :param user:User: Get the user id of the current user
-    :param db: Session: Pass the database session to the function
-    :return: A list of contacts who have birthdays in the next 7 days
-    :doc-author: Trelent
+
+    :param user: Get the user id from the database
+    :type user: User
+    :param db: Session: Pass in the database session to the function
+    :type db: Session
+    :return: A list of contacts that have birthdays within the next 7 days
+    :rtype: list[Contact]
     """
-    
     contacts = db.query(Contact).filter(Contact.user_id == user.id).all()
     today = datetime.now().date()
     end_date = today + timedelta(days=7)
@@ -152,17 +154,20 @@ async def find_contacts(
 ) -> List[Contact]:
     """
     The find_contacts function is used to search for contacts in the database.
-        The function takes a user object, and optional firstname, lastname, and email parameters.
-        If any of these are provided they will be used as filters on the query.
     
-    :param db: Session: Pass the database session to the function
-    :param user: User: Identify the user who is making the request
-    :param firstname: str: Filter the contacts by firstname
-    :param lastname: str: Search for a contact by lastname
-    :param email: str: Search for a contact by email
-    :param : Filter the contacts by firstname, lastname and email
-    :return: A list of contacts
-    :doc-author: Trelent
+
+    :param db: Session: Connect to the database
+    :type db: Session
+    :param user: User: Get the user id from the user table
+    :type user: User
+    :param firstname: Filter the contacts by firstname
+    :type firstname: str
+    :param lastname: Filter the contacts by lastname
+    :type lastname: str
+    :param email: Filter the contacts by email
+    :type email: str
+    :return: A list of contacts with given parameters
+    :rtype: list[Contact]
     """
     query = db.query(Contact).filter(Contact.user_id == user.id)
 

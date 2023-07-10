@@ -10,10 +10,13 @@ async def get_user_by_email(email: str, db: Session) -> User:
     """
     The get_user_by_email function takes in an email and a database session, then returns the user with that email.
     
-    :param email: str: Pass the email address of the user to be retrieved
-    :param db: Session: Pass the database session to the function
-    :return: A user object which is the first result of a query where the email matches
-    :doc-author: Trelent
+
+    :param email: Pass the email address of the user to be retrieved
+    :type email: str
+    :param db: Pass the database session to the function
+    :type db: Session
+    :return: User with given email
+    :rtype: User
     """
     return db.query(User).filter(User.email == email).first()
 
@@ -22,16 +25,14 @@ async def get_user_by_email(email: str, db: Session) -> User:
 async def create_user(body: UserModel, db: Session) -> User:
     """
     The create_user function creates a new user in the database.
-        Args:
-            body (UserModel): The UserModel object containing the information to be added to the database.
-            db (Session): The SQLAlchemy Session object used for querying and modifying data in the database.
-        Returns:
-            User: A User object representing a newly created user.
+
     
-    :param body: UserModel: Create a new user
-    :param db: Session: Access the database
-    :return: A user object
-    :doc-author: Trelent
+    :param body: Create a new user
+    :type body: UserModel
+    :param db: Access the database
+    :type db: Session
+    :return: New user
+    :rtype: User
     """
     avatar = None
     try:
@@ -50,11 +51,13 @@ async def update_token(user: User, token: str | None, db: Session) -> None:
     """
     The update_token function updates the refresh token for a user.
     
-    :param user: User: Identify the user that is being updated
-    :param token: str | None: Set the refresh token for a user
-    :param db: Session: Commit the changes to the database
+    :param user: Identify the user that is being updated
+    :type user: User
+    :param token: Set the refresh token for a user
+    :Type token: str | None
+    :param db: Commit the changes to the database
+    :type db: Session
     :return: None
-    :doc-author: Trelent
     """
     user.refresh_token = token
     db.commit()
@@ -64,10 +67,12 @@ async def confirmed_email(email: str, db: Session) -> None:
     """
     The confirmed_email function sets the confirmed field of a user to True.
     
-    :param email: str: Get the email address of the user
-    :param db: Session: Pass the database session into the function
-    :return: None, but the type hint says it returns none
-    :doc-author: Trelent
+
+    :param email: Get the email address of the user
+    :type email: str
+    :param db: Pass the database session into the function
+    :type db: Session
+    :return: None
     """
     user = await get_user_by_email(email, db)
     user.confirmed = True
@@ -78,16 +83,15 @@ async def update_avatar(email, url: str, db: Session) -> User:
     """
     The update_avatar function updates the avatar of a user.
     
-    Args:
-        email (str): The email address of the user to update.
-        url (str): The URL for the new avatar image.
-        db (Session, optional): A database session object to use instead of creating one locally. Defaults to None.  # noQA: E501 line too long, but this is an example!  # noQA: E501 line too long, but this is an example!  # noQA: E501 line too long, but this is an example!  # noQ
     
     :param email: Get the user from the database
-    :param url: str: Specify the type of data that is being passed in
-    :param db: Session: Pass the database session to the function
-    :return: A user object
-    :doc-author: Trelent
+    :type email: str
+    :param url: Specify the type of data that is being passed in
+    :type url: str
+    :param db: Pass the database session to the function
+    :type db: Session
+    :return: User with given email
+    :rtype: User
     """
     user = await get_user_by_email(email, db)
     user.avatar = url

@@ -11,8 +11,8 @@ from sqlalchemy.orm import Session
 
 from src.database.db import get_db
 from src.repository import users as repository_users
-from src.conf.config import settings
 
+from src.conf.config import settings
 
 class Auth:
     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -26,23 +26,25 @@ class Auth:
             and returns True if they match, False otherwise. This is used to verify that the user's login
             credentials are correct.
         
+
         :param self: Represent the instance of the class
         :param plain_password: Verify the password entered by the user
+        :type plain_password: str
         :param hashed_password: Check if the password is correct
+        :type hashed_password: str
         :return: A boolean value
-        :doc-author: Trelent
+        :rtype: Boolean
         """
         return self.pwd_context.verify(plain_password, hashed_password)
 
     def get_password_hash(self, password: str):
         """
         The get_password_hash function takes a password as input and returns the hash of that password.
-            The function uses the pwd_context object to generate a hash from the given password.
-        
+
         :param self: Represent the instance of the class
         :param password: str: Pass in the password that is to be hashed
         :return: A hash of the password
-        :doc-author: Trelent
+        :rtype: str
         """
         return self.pwd_context.hash(password)
 
@@ -50,15 +52,15 @@ class Auth:
     async def create_access_token(self, data: dict, expires_delta: Optional[float] = None):
         """
         The create_access_token function creates a new access token for the user.
-            Args:
-                data (dict): A dictionary containing the user's information.
-                expires_delta (Optional[float]): The time in seconds until the token expires. Defaults to 15 minutes if not specified.
+
         
         :param self: Represent the instance of the class
-        :param data: dict: Pass the data that will be encoded in the jwt
-        :param expires_delta: Optional[float]: Set the expiration time of the access token
+        :param data: Pass the data that will be encoded in the jwt
+        :type data: dict
+        :param expires_delta: Set the expiration time of the access token
+        :type expires_delta: Optional[float]
         :return: A token that is encoded with the user's data
-        :doc-author: Trelent
+        :rtype: str
         """
         to_encode = data.copy()
         if expires_delta:
@@ -75,15 +77,15 @@ class Auth:
     async def create_refresh_token(self, data: dict, expires_delta: Optional[float] = None):
         """
         The create_refresh_token function creates a refresh token for the user.
-            Args:
-                data (dict): The data to be encoded in the JWT. This should include at least a username and an email address, but can also include other information such as roles or permissions.
-                expires_delta (Optional[float]): The number of seconds until this token expires, defaults to 7 days if not specified.
+
         
         :param self: Represent the instance of the class
-        :param data: dict: Pass in the data that you want to encode into the token
-        :param expires_delta: Optional[float]: Set the expiration time of the refresh token
+        :param data: Pass in the data that you want to encode into the token
+        :type data: dict
+        :param expires_delta: Set the expiration time of the refresh token
+        :type expires_delta: Optional[float]
         :return: A refresh token
-        :doc-author: Trelent
+        :rtype: str
         """
         to_encode = data.copy()
         if expires_delta:
@@ -99,14 +101,13 @@ class Auth:
     async def decode_refresh_token(self, refresh_token: str):
         """
         The decode_refresh_token function is used to decode the refresh token.
-            The function will raise an HTTPException if the token is invalid or has expired.
-            If the token is valid, it will return a string containing the email address of 
-            user who owns that refresh_token.
+
         
         :param self: Represent the instance of the class
-        :param refresh_token: str: Pass in the refresh token that was sent to the client
+        :param refresh_token: Pass in the refresh token that was sent to the client
+        :type refresh_token: str
         :return: The email of the user who is trying to refresh their access token
-        :doc-author: Trelent
+        :rtype: str
         """
         try:
             payload = jwt.decode(
@@ -129,7 +130,7 @@ class Auth:
         :param token: str: Get the token from the request header
         :param db: Session: Pass the database session to the function
         :return: The user object
-        :doc-author: Trelent
+        :rtype: User
         """
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -165,7 +166,7 @@ class Auth:
         :param self: Represent the instance of the class
         :param data: dict: Pass the data that will be encoded in the token
         :return: A token
-        :doc-author: Trelent
+        :rtype: str
         """
         to_encode = data.copy()
         expire = datetime.utcnow() + timedelta(days=7)
@@ -177,12 +178,13 @@ class Auth:
     async def get_email_from_token(self, token: str):
         """
         The get_email_from_token function takes a token as an argument and returns the email associated with that token.
-            If the token is invalid, it raises an HTTPException.
+
         
         :param self: Represent the instance of the class
         :param token: str: Pass in the token that was sent to the user's email
+        :type token: str
         :return: The email address of the user who is trying to verify their account
-        :doc-author: Trelent
+        :rtype: str
         """
         try:
             payload = jwt.decode(token, self.SECRET_KEY, algorithms=[self.ALGORITHM])

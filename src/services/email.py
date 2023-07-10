@@ -7,6 +7,7 @@ from fastapi_mail.errors import ConnectionErrors
 from pydantic import EmailStr
 
 from src.services.auth import auth_service
+
 from src.conf.config import settings
 
 conf = ConnectionConfig(
@@ -27,16 +28,16 @@ conf = ConnectionConfig(
 async def send_email(email: EmailStr, username: str, host: str):
     """
     The send_email function sends an email to the user with a link to confirm their email address.
-        The function takes in three parameters:
-            -email: the user's email address, which is used as a unique identifier for them.
-            -username: the username of the user who registered. This is included in case they forget their username and need it for logging in later on. 
-            -host: this parameter contains information about where our application is hosted (i.e., localhost or Heroku). It will be used when creating links that users can click on.
-    
-    :param email: EmailStr: Specify the email address of the recipient
-    :param username: str: Pass the username to the email template
-    :param host: str: Pass the host name of the server to be used in the email template
+
+
+    :param email: Specify the email address of the recipient
+    :type email: str
+    :param username: Pass the username to the email template
+    :type username: str
+    :param host: Pass the host name of the server to be used in the email template
+    :type host: str
     :return: The token_verification
-    :doc-author: Trelent
+    :rtype: str
     """
     try:
         token_verification = auth_service.create_email_token({"sub": email})

@@ -1,23 +1,14 @@
-.. Rest API documentation master file, created by
-   sphinx-quickstart on Thu Jul  6 23:10:28 2023.
+.. Rest Api documentation master file, created by
+   sphinx-quickstart on Sat Jul  8 17:37:19 2023.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Rest API's documentation!
+Welcome to Rest Api's documentation!
 ====================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 
 
@@ -30,8 +21,8 @@ REST API main
 
 
 
-REST API database Db
-====================
+REST API database
+===================
 .. automodule:: src.database.db
   :members:
   :undoc-members:
@@ -39,7 +30,7 @@ REST API database Db
 
 
 
-REST API repository Contacts
+REST API repository contacts
 ============================
 .. automodule:: src.repository.contacts
   :members:
@@ -48,8 +39,8 @@ REST API repository Contacts
 
 
 
-REST API repository Users
-=========================
+REST API repository users
+============================
 .. automodule:: src.repository.users
   :members:
   :undoc-members:
@@ -57,8 +48,8 @@ REST API repository Users
 
 
 
-REST API routes Auth
-====================
+REST API routes auth
+============================
 .. automodule:: src.routes.auth
   :members:
   :undoc-members:
@@ -66,8 +57,8 @@ REST API routes Auth
 
 
 
-REST API routes Contacts
-========================
+REST API routes contacts
+============================
 .. automodule:: src.routes.contacts
   :members:
   :undoc-members:
@@ -75,8 +66,8 @@ REST API routes Contacts
 
 
 
-REST API routes Users
-=====================
+REST API routes users
+============================
 .. automodule:: src.routes.users
   :members:
   :undoc-members:
@@ -84,8 +75,8 @@ REST API routes Users
 
 
 
-REST API services Auth
-======================
+REST API services auth
+============================
 .. automodule:: src.services.auth
   :members:
   :undoc-members:
@@ -93,8 +84,8 @@ REST API services Auth
 
 
 
-REST API services Email
-=======================
+REST API services email
+============================
 .. automodule:: src.services.email
   :members:
   :undoc-members:

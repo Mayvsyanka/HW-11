@@ -27,16 +27,20 @@ async def find_contacts(
 ) -> List[Contact]:
     """
     The find_contacts function is used to find contacts in the database.
-        The function takes three optional parameters: firstname, lastname and email.
-        If no parameters are provided, all contacts will be returned.
+
     
-    :param db: Session: Get the database session
-    :param user: User: Get the user id from the token
-    :param firstname: str: Search for contacts by firstname
-    :param lastname: str: Search for a contact by lastname
-    :param email: str: Filter the contacts by email
+    :param db: Get the database session
+    :type db: Session
+    :param user: Get the user id from the token
+    :type user: User
+    :param firstname: Search for contacts by firstname
+    :type firstname: str
+    :param lastname: Search for a contact by lastname
+    :type lastname: str
+    :param email: Filter the contacts by email
+    :type email: str
     :return: A list of contacts
-    :doc-author: Trelent
+    :rtype: list[Contacts]
     """
     contacts = await repository_contacts.find_contacts(db, user, firstname, lastname, email)
     if contacts is None:
@@ -49,13 +53,14 @@ async def find_contacts(
 async def nearest_birthdays(user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The nearest_birthdays function returns the nearest birthdays of a user's contacts.
-        The function takes in an optional parameter, user, which is the current logged-in user.
-        If no such parameter is passed to the function, it will return all contacts' birthdays.
+
     
-    :param user: User: Get the user from the token
-    :param db: Session: Pass the database connection to the function
-    :return: A list of contacts that have a birthday in the next 30 days
-    :doc-author: Trelent
+    :param user: Get the user id from the database
+    :type user: User
+    :param db: Session: Pass in the database session to the function
+    :type db: Session
+    :return: A list of contacts that have birthdays within the next 7 days
+    :rtype: list[Contact]
     """
     contacts = await repository_contacts.get_birthdays(user ,db)
     if contacts is None:
@@ -68,16 +73,18 @@ async def nearest_birthdays(user: User = Depends(auth_service.get_current_user),
 async def read_contacts(current_user: User = Depends(auth_service.get_current_user), skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
     The read_contacts function returns a list of contacts for the current user.
-        The function takes in three parameters:
-            - skip (int): The number of contacts to skip before returning results. Default is 0.
-            - limit (int): The maximum number of contacts to return per page. Default is 100, max is 1000.
+
     
-    :param current_user: User: Get the current user from the auth_service
-    :param skip: int: Skip the first n contacts in the list
-    :param limit: int: Limit the number of contacts returned
-    :param db: Session: Pass the database session to the repository
-    :return: A list of contacts
-    :doc-author: Trelent
+    :param user: Get the user_id from the user object
+    :type user: User
+    :param skip: Skip the first n contacts
+    :type skip: int
+    :param limit: Limit the number of contacts that are returned
+    :type limit: int
+    :param db: Pass the database session to the function
+    :type db: Session
+    :return: A list of contacts for a user
+    :rtype: list[Contact]
     """
     contacts = await repository_contacts.get_contacts(current_user ,skip, limit, db)
     return contacts
@@ -87,14 +94,16 @@ async def read_contacts(current_user: User = Depends(auth_service.get_current_us
 async def read_contact(contact_id: int, user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The read_contact function returns a contact by its ID.
-        If the contact does not exist, it raises an HTTP 404 error.
     
     
-    :param contact_id: int: Specify the contact id to be read
-    :param user: User: Get the user from the auth_service
-    :param db: Session: Pass the database session to the function
-    :return: A contact object
-    :doc-author: Trelent
+    :param user: Get the user from the database
+    :type user: User
+    :param contact_id: Filter the contact by id
+    :type contact_id: int
+    :param db: Get the database session
+    :type db: Session
+    :return: The first contact found in the database that matches the user_id and contact_id
+    :rtype: Contact | None
     """
     contact = await repository_contacts.get_contact(user, contact_id, db)
     if contact is None:
@@ -109,11 +118,14 @@ async def create_contact(body: ContactModel, user: User = Depends(auth_service.g
     The create_contact function creates a new contact in the database.
         
     
-    :param body: ContactModel: Pass the data from the request body to our function
-    :param user: User: Get the current user and pass it to the repository
-    :param db: Session: Pass the database session to the repository layer
-    :return: A contactmodel object
-    :doc-author: Trelent
+    :param body: Get the data from the request body
+    :type body: ContactModel
+    :param user: Get the user id from the token
+    :type user: User
+    :param db: Get the database session
+    :type db: Session
+    :return: New contact
+    :rtype: Contact
     """
     return await repository_contacts.create_contact(body, user, db)
 
@@ -124,12 +136,16 @@ async def update_contact(contact_id: int, body: ContactUpdate, user: User = Depe
     The update_contact function updates a contact in the database.
         
     
-    :param contact_id: int: Identify the contact to be updated
-    :param body: ContactUpdate: Pass in the data that will be used to update the contact
-    :param user: User: Get the current user from the auth_service
-    :param db: Session: Pass the database session to the repository layer
-    :return: A contact object
-    :doc-author: Trelent
+    :param user: Get the user id from the token
+    :type user: User
+    :param contact_id: Identify the contact that is being updated
+    :type contact_id: int
+    :param body: Get the data from the request body
+    :type body: ContactUpdate
+    :param db: Access the database
+    :type db: Session
+    :return: An updated contact object
+    :rtype: Contact | None
     """
     contact = await repository_contacts.update_contact(user, contact_id, body, db)
     if contact is None:
@@ -142,16 +158,16 @@ async def update_contact(contact_id: int, body: ContactUpdate, user: User = Depe
 async def remove_contact(contact_id: int, user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The remove_contact function removes a contact from the database.
-        Args:
-            contact_id (int): The id of the contact to be removed.
-            user (User): The current user, as determined by auth_service.get_current_user().
-            db (Session): A connection to the database, as determined by get_db().
+
     
-    :param contact_id: int: Specify the id of the contact to be removed
-    :param user: User: Get the user from the auth_service
-    :param db: Session: Pass the database session to the repository layer
-    :return: A contact object, which is the same as the one we get from get_contact
-    :doc-author: Trelent
+    :param user: Identify the user who is making the request
+    :type user: User
+    :param contact_id: Identify the contact to be removed
+    :type contact_id: int
+    :param db: Pass the database session to the function
+    :type db: Session
+    :return: The contact object if it was deleted, otherwise none
+    :rtype: Contact | None
     """
     contact = await repository_contacts.remove_contact(user, contact_id, db)
     if contact is None:
@@ -164,14 +180,14 @@ async def remove_contact(contact_id: int, user: User = Depends(auth_service.get_
 async def nearest_birthdays(user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The nearest_birthdays function returns the nearest birthdays of a user's contacts.
-        The function takes in an optional User object and a Session object as parameters.
-        It then calls the repository_contacts.birthdays() function to get all of the user's contacts' birthdays, 
-        which are returned as JSON objects.
+
     
-    :param user: User: Get the current user from the auth_service
-    :param db: Session: Pass the database session to the function
-    :return: A list of contacts
-    :doc-author: Trelent
+    :param user: Get the user id from the database
+    :type user: User
+    :param db: Session: Pass in the database session to the function
+    :type db: Session
+    :return: A list of contacts that have birthdays within the next 7 days
+    :rtype: list[Contact]
     """
     contacts = await repository_contacts.birthdays(user, db)
     if contacts is None:

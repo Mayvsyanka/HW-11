@@ -1,6 +1,5 @@
-"""Main module"""
-
 import redis.asyncio as redis
+
 from fastapi import FastAPI
 from fastapi_limiter import FastAPILimiter
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,25 +23,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.on_event("startup")
 async def startup():
     """
     The startup function is called when the application starts up.
-    It's a good place to initialize things that are used by the app, such as caches or databases.
+    It's a good place to initialize things that are needed by your app, like database connections or caches.
     
-    :return: A future, so you need to await it
+    :return: A coroutine that is run when the server starts
     """
-    r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0, encoding="utf-8",
-                          decode_responses=True)
+    r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0, encoding="utf-8", decode_responses=True)
     await FastAPILimiter.init(r)
 
 
 @app.get("/", tags=["Root"])
 def read_root():
     """
-    The read_root function returns a dictionary with the key &quot;message&quot; and value &quot;Hello World&quot;.
+    The read_root function returns a dictionary.
     
-    
-    :return: dictionary
+    :return: A dictionary: '{"message": "Welcome to my Rest Api application"}'
+    :rtype: dict
     """
     return {"message": "Welcome to my Rest Api application"}

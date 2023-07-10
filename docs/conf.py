@@ -9,9 +9,10 @@ import sys
 import os
 
 sys.path.append(os.path.abspath('..'))
-project = 'Rest API'
+project = 'Rest Api'
 copyright = '2023, Mayvsyanka'
 author = 'Mayvsyanka'
+release = '0.0.2'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
