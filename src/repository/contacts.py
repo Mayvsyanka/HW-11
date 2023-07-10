@@ -180,3 +180,5 @@ async def find_contacts(
 
     contact = query.all()
     return contact
+
+
